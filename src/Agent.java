@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public abstract class Agent {
 
@@ -18,6 +19,10 @@ public abstract class Agent {
 
 	public void setInbox(Inbox inbox) {
 		this.inbox = inbox;
+	}
+	
+	public ArrayList<Message> getMessages() {
+		return this.inbox.getMessages(this);
 	}
 	
 	public Agent(String name, Inbox inbox) {

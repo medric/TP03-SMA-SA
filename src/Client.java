@@ -19,14 +19,16 @@ public class Client extends Agent{
 		this.maximumBudget = maximumBudget;
 	}
 	
-	public void MakeOffer(double price, Negotiation negotiation) {
-		Message message = new Message(this, negotiation.getProvider(), negotiation, price); 
-		this.getInbox().send(message);
+	public void makeOffer(double price, Negotiation negotiation) {
+		if(price <= maximumBudget) {
+			Message message = new Message(this, negotiation.getProvider(), negotiation, price, MessageType.offer); 
+			this.getInbox().send(message);
+		}
 	}
 	
 	public boolean acceptOffer(double price) {
 		
-		// TODO : param en fonction du nombre de négociation
+		// TODO : param en fonction du nombre de nÃ©gociation
 		
 		boolean accept = false;
 		

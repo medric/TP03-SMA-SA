@@ -34,9 +34,11 @@ public class Inbox {
 	public void send(Message message) {
 		ArrayList<Message> recipientMessages = this.messages.get(message.getRecipient());
 		
-		if(recipientMessages != null) {
-			recipientMessages.add(message);
-			this.messages.put(message.getRecipient(), recipientMessages);
+		if(recipientMessages == null) {
+			recipientMessages = new ArrayList<Message>();
 		}
+		
+		recipientMessages.add(message);
+		this.messages.put(message.getRecipient(), recipientMessages);
 	}
 }

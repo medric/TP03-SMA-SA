@@ -4,15 +4,16 @@ public class Message {
 	private Agent recipient;
 	private Negotiation negotiation;
 	private double price;
-	private  TypeMessage type;
+	private  MessageType type;
 
 	public Message() {
 	}
 	
-	public Message(Agent emitter, Agent recipient, Negotiation negotiation, double price, int typeReply) {
+	public Message(Client emitter, Provider recipient, Negotiation negotiation, double price, MessageType type) {
 		this.setNegotiation(negotiation);
 		this.setEmitter(emitter);
 		this.setRecipient(recipient);
+		this.setType(type);
 	}
 	
 	public double getPrice() {
@@ -59,6 +60,11 @@ public class Message {
 		this.negotiation = negotiation;
 	}
 	
-	
+	public MessageType getType() {
+		return type;
+	}
 
+	public void setType(MessageType type) {
+		this.type = type;
+	}
 }

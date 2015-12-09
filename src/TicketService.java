@@ -2,37 +2,47 @@ import java.util.Date;
 
 public class TicketService {
 
-	private String placeDeparture;
-	private String placeArrival;
-	private Date dateDeparture;
+	private String departurePlace;
+	private String arrivalPlace;
+	private Date departureDate;
+	private double price;
 	
-	public String getPlaceDeparture() {
-		return placeDeparture;
+	public TicketService(String departurePlace, String arrivalPlace, Date departureDate, double price) {
+		this.setDeparturePlace(departurePlace);
+		this.setArrivalPlace(arrivalPlace);
+		this.setDepartureDate(departureDate);
+		this.setPrice(price);
 	}
 	
-	public void setPlaceDeparture(String placeDeparture) {
-		this.placeDeparture = placeDeparture;
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public String getDeparturePlace() {
+		return departurePlace;
 	}
 	
-	public String getPlaceArrival() {
-		return placeArrival;
+	public void setDeparturePlace(String departurePlace) {
+		this.departurePlace = departurePlace;
 	}
 	
-	public void setPlaceArrival(String placeArrival) {
-		this.placeArrival = placeArrival;
+	public String getArrivalPlace() {
+		return arrivalPlace;
 	}
 	
-	public Date getDateDeparture() {
-		return dateDeparture;
+	public void setArrivalPlace(String arrivalPlace) {
+		this.arrivalPlace = arrivalPlace;
 	}
 	
-	public void setDateDeparture(Date dateDeparture) {
-		this.dateDeparture = dateDeparture;
+	public Date getDepartureDate() {
+		return departureDate;
 	}
 	
-	public TicketService(String placeDeparture, String placeArrival, Date dateDeparture) {
-		this.placeDeparture = placeDeparture;
-		this.placeArrival = placeArrival;
-		this.dateDeparture = dateDeparture;
+	public void setDepartureDate(Date departureDate) {
+		this.departureDate = departureDate;
 	}
 }

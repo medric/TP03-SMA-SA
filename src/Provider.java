@@ -1,13 +1,20 @@
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
-import com.sun.corba.se.impl.orbutil.closure.Constant;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 
 public class Provider extends Agent{
-
+	private static ArrayList<TicketService> ticketsList = new ArrayList();
+	static {
+		ticketsList.add(new TicketService("Lyon", "Berlin", new Date(), 200d));
+		ticketsList.add(new TicketService("Paris", "Los Angeles", new Date(), 350d));
+		ticketsList.add(new TicketService("Lyon", "Paris", new Date(), 400d));
+		ticketsList.add(new TicketService("Lyon", "Bordeaux", new Date(), 150d));
+	}
+	
 	private double minimumPrice;
-	private ArrayList<TicketService> listTicket;
+	private ArrayList<TicketService> ticketService;
 	private static double LOW_PROBABILITY = 1.2;
 	private static double AVERAGE_PROBABILITY =  1.5;
 	
@@ -22,20 +29,27 @@ public class Provider extends Agent{
 	public Provider(String name, double minimumPrice, Inbox inbox) {
 		super(name, inbox);
 		this.minimumPrice = minimumPrice;
-		this.listTicket = new ArrayList<TicketService>();
+		this.ticketService = new ArrayList<TicketService>();
 	}
 	
-	public void MakeOffer(double price) {
-		Message message = new Message();
-		this.getInbox().send(message);
+	public void makeOffer(double price, Negotiation negotiation) {
+		// A ticket is found for this negotiation
+		TicketService ticket = find(negotiation.getDeparturePlace(), negotiation.getArrivalPlace(), negotiation.getDesiredDate());
+		if(ticket != null) {
+			price = ticket.getPrice();
+			if(price > negotiation.getMaximumBudget()) {
+				price = price * 0.2;
+			}
+			Message message = new Message(negotiation.getClient(), this, negotiation, price, MessageType.offer); 
+			this.getInbox().send(message);
+		}
 	}
 	
 	public void addTicket(TicketService ticket) {
-		this.listTicket.add(ticket);
+		this.ticketService.add(ticket);
 	}
 	
 	public boolean acceptOffer(double price) {
-		
 		boolean accept = false;
 		
 		if(price > minimumPrice) {
@@ -59,5 +73,20 @@ public class Provider extends Agent{
 		}
 		
 		return accept;
+	}
+	
+	public TicketService find(String departure, String arrival, Date date) {
+		TicketService ticket = null;
+		for(TicketService _ticket : ticketsList) {
+			if(_ticket.getDeparturePlace().equals(departure) && 
+					_ticket.getArrivalPlace().equals(arrival) &&
+						_ticket.getDepartureDate().after(date)) {
+				ticket = _ticket;
+				break;
+				
+			}
+		}
+		
+		return ticket;
 	}
 }
