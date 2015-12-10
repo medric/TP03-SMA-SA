@@ -33,17 +33,8 @@ public class Negotiation implements Runnable {
 	@Override
 	public void run() {
 		while(state.equals(State.open)) {
-			if(this.ticketList.isEmpty()) {
-				this.client.makeOffer(getRandomPrice(), this);
-			} else {
-				for(Message message : this.provider.getMessages()) {
-					if(message.getRecipient().equals(this.client)) {
-						if(!this.provider.acceptOffer(message.getPrice()) && message.getType().equals(MessageType.offer)) {
-							this.client.makeOffer(, this);
-						}
-					}
-				}
-			}
+			processingProvider();
+			processingClient();
 		}
 	}
 	
@@ -115,7 +106,35 @@ public class Negotiation implements Runnable {
 		this.state = state;
 	}
 	
-	private double getRandomPrice() {
+	public double getRandomPrice() {
 		return 10 + (this.maximumBudget - 10) * r.nextDouble();
+	}
+	
+	private void processingProvider() {
+		for(Message message : this.provider.getMessages()) {
+			if(message.getRecipient().equals(this.client)) {
+				if(!this.provider.acceptOffer(message.getPrice()) && message.getType().equals(MessageType.offer)) {
+					System.out.println("Le fournisseur" + this.provider.getName() + " refuse l'offre de " + this.client.getName() + " d'un montant "  + message.getPrice());
+					
+					// Provider makes an offer
+					System.out.println("Le founisseur" + this.provider.getName() + " fait une offre d'un montant de "  + message.getPrice()  + " à " + this.client.getName());
+					this.provider.makeOffer(this);
+				} 
+			}
+		}
+	}
+	
+	private void processingClient() {
+		for(Message message : this.client.getMessages()) {
+			if(message.getRecipient().equals(this.client)) {
+				if(!this.provider.acceptOffer(message.getPrice()) && message.getType().equals(MessageType.offer)) {
+					System.out.println("Le client" + this.client.getName() + " refuse l'offre de " + this.provider.getName() + " d'un montant "  + message.getPrice());
+					
+					// Client makes an offer
+					System.out.println("Le client" + this.client.getName() + " fait une offre d'un montant de "  + message.getPrice()  + " à " + this.provider.getName());
+					this.client.makeOffer(this);
+				} 
+			}
+		}
 	}
 }

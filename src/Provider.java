@@ -32,13 +32,15 @@ public class Provider extends Agent{
 		this.ticketService = new ArrayList<TicketService>();
 	}
 	
-	public void makeOffer(double price, Negotiation negotiation) {
+	public void makeOffer(Negotiation negotiation) {
 		// A ticket is found for this negotiation
 		TicketService ticket = find(negotiation.getDeparturePlace(), negotiation.getArrivalPlace(), negotiation.getDesiredDate());
 		if(ticket != null) {
-			price = ticket.getPrice();
+			double price = ticket.getPrice();
 			if(price > negotiation.getMaximumBudget()) {
 				price = price * 0.2;
+				TicketService newTicket = new TicketService(ticket.getDeparturePlace(), ticket.getArrivalPlace(), ticket.getDepartureDate(), price);
+				negotiation.addTicket(newTicket); // Add a new ticket to the negotiation
 			}
 			Message message = new Message(negotiation.getClient(), this, negotiation, price, MessageType.offer); 
 			this.getInbox().send(message);
