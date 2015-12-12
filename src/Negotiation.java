@@ -5,6 +5,7 @@ import java.util.Random;
 
 public class Negotiation implements Runnable {
 	private static int MAX_EXCHANGES_NUMBER = 20;
+	private static float MAX_NEGOTATION_TIME = 30f;
 	private static Random R = new Random();
 	private ArrayList<TicketService> ticketList;
 	private Provider provider;
@@ -27,9 +28,21 @@ public class Negotiation implements Runnable {
 	@Override
 	public void run() {
 		int exchanges = 0;
+		// Get current time
+		long start = System.currentTimeMillis();
+		long elapsedTimeMillis;
+		float elapsedTimeSec = 0f;
+		
 		System.out.println("Negotation starts between " + this.client.getName() + " and "  + this.provider.getName());
-		// While the negotiation is opened 
-		while(state.equals(State.open) && exchanges < MAX_EXCHANGES_NUMBER) {
+		// While the negotiation is opened , max number of exchanges is not reached and time is not out
+		while(state.equals(State.open) && 
+				exchanges < MAX_EXCHANGES_NUMBER && 
+					elapsedTimeSec <= MAX_NEGOTATION_TIME) {
+			// Get elapsed time in milliseconds
+			elapsedTimeMillis = System.currentTimeMillis() - start;
+			// Get elapsed time in seconds
+			elapsedTimeSec = elapsedTimeMillis/1000F;
+			
 			processingProvider();
 			processingClient();
 			exchanges++;
@@ -126,11 +139,11 @@ public class Negotiation implements Runnable {
 		for(Message message : this.provider.getMessages()) {
 			if(message.getEmitter().equals(this.client)) {
 				if(!this.provider.acceptOffer(message.getPrice()) && message.getType().equals(MessageType.offer)) {
-					System.out.println("The provider " + this.provider.getName() + " refused the offer from " + this.client.getName() + " with an amount of "  + message.getPrice());
+					System.out.println("The provider " + this.provider.getName() + " refused the offer from " + this.client.getName() + " with an amount of "  + Math.round(message.getPrice()));
 					
 					if(!this.getTicketList().isEmpty()) {
-						// Set minimum price
-						this.provider.setMinimumPrice(this.ticketList.get(this.getTicketList().size() - 1).getPrice() * 0.4);
+						// Set minimum price up to 20% of the last ticket price
+						this.provider.setMinimumPrice(this.ticketList.get(this.getTicketList().size() - 1).getPrice() * 0.9);
 					}
 					// Provider makes an offer
 					this.provider.makeOffer(this);
@@ -155,7 +168,7 @@ public class Negotiation implements Runnable {
 		for(Message message : this.client.getMessages()) {
 			if(message.getEmitter().equals(this.provider)) {
 				if(!this.client.acceptOffer(message.getPrice()) && message.getType().equals(MessageType.offer)) {
-					System.out.println("The client " + this.client.getName() + " refused the offer from " + this.provider.getName() + " with an amount of "  + message.getPrice());
+					System.out.println("The client " + this.client.getName() + " refused the offer from " + this.provider.getName() + " with an amount of "  + Math.round(message.getPrice()));
 					
 					// Client makes an offer
 					this.client.makeOffer(this);

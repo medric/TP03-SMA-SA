@@ -4,7 +4,7 @@ public class Client extends Agent{
 	private double maximumBudget;
 	private static double HIGH_PROBABILITY = 2;
 	private static double AVERAGE_PROBABILITY = 1.5;
-	private static double REGULATOR = 10;
+	private static double REGULATOR = 30;
 	
 	public double getMaximumBudget() {
 		return maximumBudget;
@@ -32,14 +32,19 @@ public class Client extends Agent{
 			price = lastTicket.getPrice();
 			// Based on the last ticket price
 			if(laps > 3) {
-				price = (1/laps) * REGULATOR * price;
+				// Less than 20% of the price
+				if((1/laps) * REGULATOR * price < price * 0.1) {
+					price *= 1.1;
+				} else {
+					price = (1/laps) * REGULATOR * price; 
+				}
 			} else {
 				price *= 0.8;
 			}
 		}
 		
 		Message message = new Message(this, negotiation.getProvider(), negotiation, price, MessageType.offer); 
-		System.out.println("The client " + this.getName() + " makes an offer with an amount of "  + message.getPrice()  + " to " + negotiation.getProvider().getName());
+		System.out.println("The client " + this.getName() + " makes an offer with an amount of "  + Math.round(message.getPrice())  + " to " + negotiation.getProvider().getName());
 		this.getInbox().send(message);
 	}
 	

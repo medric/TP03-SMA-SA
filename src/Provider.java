@@ -7,10 +7,10 @@ import java.util.Random;
 public class Provider extends Agent{
 	private static ArrayList<TicketService> TICKETS_LIST = new ArrayList<TicketService>();
 	static {
-		TICKETS_LIST.add(new TicketService("Lyon", "Berlin", new GregorianCalendar(2016,6,31).getTime(), 200d));
-		TICKETS_LIST.add(new TicketService("Paris", "Los Angeles", new GregorianCalendar(2016,6,31).getTime(), 350d));
-		TICKETS_LIST.add(new TicketService("Lyon", "Paris", new GregorianCalendar(2016,6,31).getTime(), 400d));
-		TICKETS_LIST.add(new TicketService("Lyon", "Bordeaux", new GregorianCalendar(2016,6,31).getTime(), 150d));
+		TICKETS_LIST.add(new TicketService("Lyon", "Berlin", new GregorianCalendar(2016,7,1).getTime(), 200d));
+		TICKETS_LIST.add(new TicketService("Paris", "Los Angeles", new GregorianCalendar(2016,8,1).getTime(), 350d));
+		TICKETS_LIST.add(new TicketService("Lyon", "Paris", new GregorianCalendar(2016,9,1).getTime(), 400d));
+		TICKETS_LIST.add(new TicketService("Lyon", "Bordeaux", new GregorianCalendar(2016,6,1).getTime(), 150d));
 	}
 	
 	private double minimumPrice;
@@ -44,14 +44,21 @@ public class Provider extends Agent{
 		} else {
 			TicketService lastTicket = negotiation.getTicketList().get(negotiation.getTicketList().size() - 1);	
 			
-			// 10% cheaper
-			price = 0.9 * lastTicket.getPrice();
+			price = lastTicket.getPrice();
+			
+			// 10% cheaper the the last ticket
+			if(price > this.minimumPrice) {
+				price = 0.9 * lastTicket.getPrice();
+			} else {
+				price *= 1.1;
+			}
+			
 			TicketService newTicket = new TicketService(negotiation.getDeparturePlace(), negotiation.getArrivalPlace(), negotiation.getDesiredDate(), price);
 			negotiation.addTicket(newTicket); // Add a new ticket to the negotiation
 		}
 		
 		Message message = new Message(this, negotiation.getClient(), negotiation, price, MessageType.offer); 
-		System.out.println("The provider " + this.getName() + " makes an offer with an amount of "  + message.getPrice()  + " to " + negotiation.getClient().getName());
+		System.out.println("The provider " + this.getName() + " makes an offer with an amount of "  + Math.round(message.getPrice())  + " to " + negotiation.getClient().getName());
 		this.getInbox().send(message);
 	}
 	
@@ -90,7 +97,7 @@ public class Provider extends Agent{
 		for(TicketService _ticket : TICKETS_LIST) {
 			if(_ticket.getDeparturePlace().equals(departure) && 
 					_ticket.getArrivalPlace().equals(arrival) &&
-						_ticket.getDepartureDate().equals(date)) {
+						_ticket.getDepartureDate().after(date)) {
 				ticket = _ticket;
 				break;
 				
