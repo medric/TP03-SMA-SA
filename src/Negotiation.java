@@ -4,7 +4,8 @@ import java.util.Random;
 
 
 public class Negotiation implements Runnable {
-	private static Random r = new Random();
+	private static int MAX_EXCHANGES_NUMBER = 20;
+	private static Random R = new Random();
 	private ArrayList<TicketService> ticketList;
 	private Provider provider;
 	private Client client;
@@ -13,29 +14,32 @@ public class Negotiation implements Runnable {
 	private String arrivalPlace;
 	private double maximumBudget;
 	private static double charge;
-	private State state; // ouvert ou fermé négociation ?
-	
-	public Date getDesiredDate() {
-		return desiredDate;
-	}
-	
-	public void setDesiredDate(Date desiredDate) {
-		this.desiredDate = desiredDate;
-	}
-	
+	private State state;
+		
 	public Negotiation(String departurePlace, String arrivalPlace, Date desiredDate) {
 		this.desiredDate = desiredDate;
 		this.departurePlace = departurePlace;
 		this.arrivalPlace = arrivalPlace;
 		this.ticketList = new ArrayList<TicketService>();
+		this.state = State.open;
 	}
 	
 	@Override
 	public void run() {
-		while(state.equals(State.open)) {
+		int exchanges = 0;
+		System.out.println("Negotation starts between " + this.client.getName() + " and "  + this.provider.getName());
+		// While the negotiation is opened 
+		while(state.equals(State.open) && exchanges < MAX_EXCHANGES_NUMBER) {
 			processingProvider();
 			processingClient();
+			exchanges++;
 		}
+		
+		if(exchanges == MAX_EXCHANGES_NUMBER) {
+			System.out.println("Too much exchanges");
+		}
+		
+		System.out.println("End of the negotiation between " + this.client.getName() + " and " + this.provider.getName());
 	}
 	
 	public void addTicket(TicketService ticket) {
@@ -107,33 +111,60 @@ public class Negotiation implements Runnable {
 	}
 	
 	public double getRandomPrice() {
-		return 10 + (this.maximumBudget - 10) * r.nextDouble();
+		return 10 + (this.client.getMaximumBudget() - 10) * R.nextDouble();
+	}
+	
+	public Date getDesiredDate() {
+		return desiredDate;
+	}
+	
+	public void setDesiredDate(Date desiredDate) {
+		this.desiredDate = desiredDate;
 	}
 	
 	private void processingProvider() {
 		for(Message message : this.provider.getMessages()) {
-			if(message.getRecipient().equals(this.client)) {
+			if(message.getEmitter().equals(this.client)) {
 				if(!this.provider.acceptOffer(message.getPrice()) && message.getType().equals(MessageType.offer)) {
-					System.out.println("Le fournisseur" + this.provider.getName() + " refuse l'offre de " + this.client.getName() + " d'un montant "  + message.getPrice());
+					System.out.println("The provider " + this.provider.getName() + " refused the offer from " + this.client.getName() + " with an amount of "  + message.getPrice());
 					
+					if(!this.getTicketList().isEmpty()) {
+						// Set minimum price
+						this.provider.setMinimumPrice(this.ticketList.get(this.getTicketList().size() - 1).getPrice() * 0.4);
+					}
 					// Provider makes an offer
-					System.out.println("Le founisseur" + this.provider.getName() + " fait une offre d'un montant de "  + message.getPrice()  + " à " + this.client.getName());
 					this.provider.makeOffer(this);
-				} 
+				} else {
+					System.out.println("The provider accepted the offer");
+					this.state = State.close;
+				}
+				
+				// Removes the message
+				this.provider.getMessages().remove(message);
 			}
 		}
 	}
 	
 	private void processingClient() {
+		if(this.client.getMessages().isEmpty() && this.ticketList.isEmpty()) {
+			// First offer, negotiation starts here
+			System.out.println("Client makes first offer");
+			this.client.makeOffer(this);
+		} 
+		
 		for(Message message : this.client.getMessages()) {
-			if(message.getRecipient().equals(this.client)) {
-				if(!this.provider.acceptOffer(message.getPrice()) && message.getType().equals(MessageType.offer)) {
-					System.out.println("Le client" + this.client.getName() + " refuse l'offre de " + this.provider.getName() + " d'un montant "  + message.getPrice());
+			if(message.getEmitter().equals(this.provider)) {
+				if(!this.client.acceptOffer(message.getPrice()) && message.getType().equals(MessageType.offer)) {
+					System.out.println("The client " + this.client.getName() + " refused the offer from " + this.provider.getName() + " with an amount of "  + message.getPrice());
 					
 					// Client makes an offer
-					System.out.println("Le client" + this.client.getName() + " fait une offre d'un montant de "  + message.getPrice()  + " à " + this.provider.getName());
 					this.client.makeOffer(this);
-				} 
+				} else {
+					System.out.println("The client accepted the offer");
+					this.state = State.close;
+				}
+				
+				this.client.getMessages().remove(message);
 			}
 		}
 	}

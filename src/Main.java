@@ -1,7 +1,6 @@
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class Main {
@@ -9,7 +8,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		Inbox inbox = new Inbox();
-		Client client1 = new Client("toto", 350, inbox);
+		Client client1 = new Client("M. Dupont", 350, inbox);
 		
 		ArrayList<Provider> providers = new ArrayList<Provider>();
 		Provider provider1 = new Provider("Air France", 100, inbox);
@@ -26,8 +25,11 @@ public class Main {
 		
 		Calendar calendar = new GregorianCalendar(2016,6,31);
 		
-		Negotiation negotiation1 = new Negotiation("Lyon", "Los Angeles", calendar.getTime());
+		Negotiation negotiation1 = new Negotiation("Paris", "Los Angeles", calendar.getTime());
 		negotiation1.setProvider(provider1);
 		negotiation1.setClient(client1);
+		
+		Thread thread = new Thread(negotiation1);
+		thread.start();
 	}
 }

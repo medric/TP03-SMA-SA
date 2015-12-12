@@ -1,16 +1,16 @@
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.GregorianCalendar;
 import java.util.Random;
 
 
 public class Provider extends Agent{
-	private static ArrayList<TicketService> ticketsList = new ArrayList();
+	private static ArrayList<TicketService> TICKETS_LIST = new ArrayList<TicketService>();
 	static {
-		ticketsList.add(new TicketService("Lyon", "Berlin", new Date(), 200d));
-		ticketsList.add(new TicketService("Paris", "Los Angeles", new Date(), 350d));
-		ticketsList.add(new TicketService("Lyon", "Paris", new Date(), 400d));
-		ticketsList.add(new TicketService("Lyon", "Bordeaux", new Date(), 150d));
+		TICKETS_LIST.add(new TicketService("Lyon", "Berlin", new GregorianCalendar(2016,6,31).getTime(), 200d));
+		TICKETS_LIST.add(new TicketService("Paris", "Los Angeles", new GregorianCalendar(2016,6,31).getTime(), 350d));
+		TICKETS_LIST.add(new TicketService("Lyon", "Paris", new GregorianCalendar(2016,6,31).getTime(), 400d));
+		TICKETS_LIST.add(new TicketService("Lyon", "Bordeaux", new GregorianCalendar(2016,6,31).getTime(), 150d));
 	}
 	
 	private double minimumPrice;
@@ -33,18 +33,26 @@ public class Provider extends Agent{
 	}
 	
 	public void makeOffer(Negotiation negotiation) {
+		double price = 0d;
 		// A ticket is found for this negotiation
-		TicketService ticket = find(negotiation.getDeparturePlace(), negotiation.getArrivalPlace(), negotiation.getDesiredDate());
-		if(ticket != null) {
-			double price = ticket.getPrice();
-			if(price > negotiation.getMaximumBudget()) {
-				price = price * 0.2;
-				TicketService newTicket = new TicketService(ticket.getDeparturePlace(), ticket.getArrivalPlace(), ticket.getDepartureDate(), price);
-				negotiation.addTicket(newTicket); // Add a new ticket to the negotiation
+		if(negotiation.getTicketList().isEmpty()) {
+			TicketService ticket = find(negotiation.getDeparturePlace(), negotiation.getArrivalPlace(), negotiation.getDesiredDate());
+			if(ticket != null) {
+				price = ticket.getPrice();
+				negotiation.addTicket(ticket);
 			}
-			Message message = new Message(negotiation.getClient(), this, negotiation, price, MessageType.offer); 
-			this.getInbox().send(message);
+		} else {
+			TicketService lastTicket = negotiation.getTicketList().get(negotiation.getTicketList().size() - 1);	
+			
+			// 10% cheaper
+			price = 0.9 * lastTicket.getPrice();
+			TicketService newTicket = new TicketService(negotiation.getDeparturePlace(), negotiation.getArrivalPlace(), negotiation.getDesiredDate(), price);
+			negotiation.addTicket(newTicket); // Add a new ticket to the negotiation
 		}
+		
+		Message message = new Message(this, negotiation.getClient(), negotiation, price, MessageType.offer); 
+		System.out.println("The provider " + this.getName() + " makes an offer with an amount of "  + message.getPrice()  + " to " + negotiation.getClient().getName());
+		this.getInbox().send(message);
 	}
 	
 	public void addTicket(TicketService ticket) {
@@ -68,7 +76,7 @@ public class Provider extends Agent{
 					accept = true;
 				}
 			} else {
-				if(nbLuck < 66) {
+				if(nbLuck < 5) {
 					accept = true;
 				}
 			}
@@ -79,10 +87,10 @@ public class Provider extends Agent{
 	
 	public TicketService find(String departure, String arrival, Date date) {
 		TicketService ticket = null;
-		for(TicketService _ticket : ticketsList) {
+		for(TicketService _ticket : TICKETS_LIST) {
 			if(_ticket.getDeparturePlace().equals(departure) && 
 					_ticket.getArrivalPlace().equals(arrival) &&
-						_ticket.getDepartureDate().after(date)) {
+						_ticket.getDepartureDate().equals(date)) {
 				ticket = _ticket;
 				break;
 				

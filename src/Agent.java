@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class Agent {
 
@@ -21,7 +22,7 @@ public abstract class Agent {
 		this.inbox = inbox;
 	}
 	
-	public ArrayList<Message> getMessages() {
+	public CopyOnWriteArrayList<Message> getMessages() {
 		return this.inbox.getMessages(this);
 	}
 	

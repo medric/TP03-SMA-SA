@@ -9,11 +9,12 @@ public class Message {
 	public Message() {
 	}
 	
-	public Message(Client emitter, Provider recipient, Negotiation negotiation, double price, MessageType type) {
+	public Message(Agent emitter, Agent recipient, Negotiation negotiation, double price, MessageType type) {
 		this.setNegotiation(negotiation);
 		this.setEmitter(emitter);
 		this.setRecipient(recipient);
 		this.setType(type);
+		this.setPrice(price);
 	}
 	
 	public double getPrice() {
