@@ -29,7 +29,14 @@ public class Main {
 		negotiation1.setProvider(provider1);
 		negotiation1.setClient(client1);
 		
-		Thread thread = new Thread(negotiation1);
-		thread.start();
+		Negotiation negotiation2 = new Negotiation("Paris", "Los Angeles", calendar.getTime());
+		negotiation2.setProvider(provider2);
+		negotiation2.setClient(client1);
+		
+		Thread thread1 = new Thread(negotiation1);
+		thread1.start();
+		
+		Thread thread2 = new Thread(negotiation2);
+		thread2.start();
 	}
 }
