@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
-
 public class Negotiation implements Runnable {
 	private static int MAX_EXCHANGES_NUMBER = 10;
 	private static float MAX_NEGOTATION_TIME = 20f;
@@ -14,7 +13,6 @@ public class Negotiation implements Runnable {
 	private String departurePlace;
 	private String arrivalPlace;
 	private double maximumBudget;
-	private static double charge;
 	private State state;
 		
 	public Negotiation(String departurePlace, String arrivalPlace, Date desiredDate) {
@@ -52,7 +50,7 @@ public class Negotiation implements Runnable {
 			System.out.println("Too much exchanges");
 		}
 		
-		if(elapsedTimeSec <= MAX_NEGOTATION_TIME) {
+		if(elapsedTimeSec >= MAX_NEGOTATION_TIME) {
 			System.out.println("Time out");
 		}
 		
@@ -109,14 +107,6 @@ public class Negotiation implements Runnable {
 
 	public void setMaximumBudget(double maximumBudget) {
 		this.maximumBudget = maximumBudget;
-	}
-
-	public static double getCharge() {
-		return charge;
-	}
-
-	public static void setCharge(double charge) {
-		Negotiation.charge = charge;
 	}
 
 	public State getState() {
