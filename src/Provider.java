@@ -14,7 +14,6 @@ public class Provider extends Agent{
 	}
 	
 	private double minimumPrice;
-	private ArrayList<TicketService> ticketService;
 	private static double LOW_PROBABILITY = 1.2;
 	private static double AVERAGE_PROBABILITY =  1.5;
 	
@@ -29,7 +28,6 @@ public class Provider extends Agent{
 	public Provider(String name, double minimumPrice, Inbox inbox) {
 		super(name, inbox);
 		this.minimumPrice = minimumPrice;
-		this.ticketService = new ArrayList<TicketService>();
 	}
 	
 	public void makeOffer(Negotiation negotiation) {
@@ -61,11 +59,7 @@ public class Provider extends Agent{
 		System.out.println("The provider " + this.getName() + " makes an offer with an amount of "  + Math.round(message.getPrice())  + " to " + negotiation.getClient().getName());
 		this.getInbox().send(message);
 	}
-	
-	public void addTicket(TicketService ticket) {
-		this.ticketService.add(ticket);
-	}
-	
+		
 	public boolean acceptOffer(double price) {
 		boolean accept = false;
 		

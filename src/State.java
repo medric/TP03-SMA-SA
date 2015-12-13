@@ -1,5 +1,5 @@
 
 public enum State {
-	open,
-	close
+	OPENED,
+	CLOSED
 }

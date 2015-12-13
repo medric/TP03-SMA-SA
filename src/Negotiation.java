@@ -4,8 +4,8 @@ import java.util.Random;
 
 
 public class Negotiation implements Runnable {
-	private static int MAX_EXCHANGES_NUMBER = 20;
-	private static float MAX_NEGOTATION_TIME = 30f;
+	private static int MAX_EXCHANGES_NUMBER = 10;
+	private static float MAX_NEGOTATION_TIME = 20f;
 	private static Random R = new Random();
 	private ArrayList<TicketService> ticketList;
 	private Provider provider;
@@ -22,7 +22,7 @@ public class Negotiation implements Runnable {
 		this.departurePlace = departurePlace;
 		this.arrivalPlace = arrivalPlace;
 		this.ticketList = new ArrayList<TicketService>();
-		this.state = State.open;
+		this.state = State.OPENED;
 	}
 	
 	@Override
@@ -35,7 +35,7 @@ public class Negotiation implements Runnable {
 		
 		System.out.println("Negotation starts between " + this.client.getName() + " and "  + this.provider.getName());
 		// While the negotiation is opened , max number of exchanges is not reached and time is not out
-		while(state.equals(State.open) && 
+		while(state.equals(State.OPENED) && 
 				exchanges < MAX_EXCHANGES_NUMBER && 
 					elapsedTimeSec <= MAX_NEGOTATION_TIME) {
 			// Get elapsed time in milliseconds
@@ -48,8 +48,12 @@ public class Negotiation implements Runnable {
 			exchanges++;
 		}
 		
-		if(exchanges == MAX_EXCHANGES_NUMBER) {
+		if(exchanges >= MAX_EXCHANGES_NUMBER) {
 			System.out.println("Too much exchanges");
+		}
+		
+		if(elapsedTimeSec <= MAX_NEGOTATION_TIME) {
+			System.out.println("Time out");
 		}
 		
 		System.out.println("End of the negotiation between " + this.client.getName() + " and " + this.provider.getName());
@@ -148,8 +152,8 @@ public class Negotiation implements Runnable {
 					// Provider makes an offer
 					this.provider.makeOffer(this);
 				} else {
-					System.out.println("The provider accepted the offer");
-					this.state = State.close;
+					System.out.println("The provider " + this.provider.getName() + " accepted the offer");
+					this.state = State.CLOSED;
 				}
 				
 				// Removes the message
@@ -173,8 +177,8 @@ public class Negotiation implements Runnable {
 					// Client makes an offer
 					this.client.makeOffer(this);
 				} else {
-					System.out.println("The client accepted the offer");
-					this.state = State.close;
+					System.out.println("The client " + this.client.getName() + " accepted the offer");
+					this.state = State.CLOSED;
 				}
 				
 				this.client.getMessages().remove(message);

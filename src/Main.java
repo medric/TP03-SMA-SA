@@ -36,7 +36,7 @@ public class Main {
 		Thread thread1 = new Thread(negotiation1);
 		thread1.start();
 		
-		Thread thread2 = new Thread(negotiation2);
-		thread2.start();
+		/*Thread thread2 = new Thread(negotiation2);
+		thread2.start();*/
 	}
 }
