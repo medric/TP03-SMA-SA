@@ -4,7 +4,7 @@ public class Client extends Agent{
 	private double maximumBudget;
 	private static double HIGH_PROBABILITY = 2;
 	private static double AVERAGE_PROBABILITY = 1.5;
-	private static double REGULATOR = 30;
+	private static double REGULATOR = 15;
 	
 	public double getMaximumBudget() {
 		return maximumBudget;
@@ -32,9 +32,9 @@ public class Client extends Agent{
 			price = lastTicket.getPrice();
 			// Based on the last ticket price
 			if(laps > 3) {
-				// Less than 20% of the price
+				// Less than 10% of the price
 				if((1/laps) * REGULATOR * price < price * 0.1) {
-					price *= 1.1;
+					price *= 1.05;
 				} else {
 					price = (1/laps) * REGULATOR * price; 
 				}
