@@ -55,7 +55,7 @@ public class Provider extends Agent{
 			negotiation.addTicket(newTicket); // Add a new ticket to the negotiation
 		}
 		
-		Message message = new Message(this, negotiation.getClient(), negotiation, price, MessageType.offer); 
+		Message message = new Message(this, negotiation.getClient(), negotiation, price, MessageType.OFFER); 
 		System.out.println("The provider " + this.getName() + " makes an offer with an amount of "  + Math.round(message.getPrice())  + " to " + negotiation.getClient().getName());
 		this.getInbox().send(message);
 	}

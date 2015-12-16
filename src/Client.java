@@ -43,7 +43,7 @@ public class Client extends Agent{
 			}
 		}
 		
-		Message message = new Message(this, negotiation.getProvider(), negotiation, price, MessageType.offer); 
+		Message message = new Message(this, negotiation.getProvider(), negotiation, price, MessageType.OFFER); 
 		System.out.println("The client " + this.getName() + " makes an offer with an amount of "  + Math.round(message.getPrice())  + " to " + negotiation.getProvider().getName());
 		this.getInbox().send(message);
 	}

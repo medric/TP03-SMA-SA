@@ -132,7 +132,7 @@ public class Negotiation implements Runnable {
 	private void processingProvider() {
 		for(Message message : this.provider.getMessages()) {
 			if(message.getEmitter().equals(this.client)) {
-				if(!this.provider.acceptOffer(message.getPrice()) && message.getType().equals(MessageType.offer)) {
+				if(!this.provider.acceptOffer(message.getPrice()) && message.getType().equals(MessageType.OFFER)) {
 					System.out.println("The provider " + this.provider.getName() + " refused the offer from " + this.client.getName() + " with an amount of "  + Math.round(message.getPrice()));
 					
 					if(!this.getTicketList().isEmpty()) {
@@ -161,7 +161,7 @@ public class Negotiation implements Runnable {
 		
 		for(Message message : this.client.getMessages()) {
 			if(message.getEmitter().equals(this.provider)) {
-				if(!this.client.acceptOffer(message.getPrice()) && message.getType().equals(MessageType.offer)) {
+				if(!this.client.acceptOffer(message.getPrice()) && message.getType().equals(MessageType.OFFER)) {
 					System.out.println("The client " + this.client.getName() + " refused the offer from " + this.provider.getName() + " with an amount of "  + Math.round(message.getPrice()));
 					
 					// Client makes an offer

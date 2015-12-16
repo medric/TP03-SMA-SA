@@ -1,5 +1,5 @@
 
 public enum MessageType {
-	offer,
-	reply
+	OFFER,
+	REPLY
 }
